@@ -54,7 +54,8 @@ public class CreateObjectTest : MonoBehaviour
 
         tMonoTranformPresentation.m_ReferenceMonos.Add(tReferenceTranformMono);
 
-
+        tMonoTranformPresentation.m_ReferenceMonos.Sort(new MonoTransformComparer());
+        
         MonobehaviorAnimationPresentation tMonoAnimatorPresentation = World.Active.GetOrCreateSystem<MonobehaviorAnimationPresentation>();
 
         ReferenceAnimatorMono tReferenceAnimatorMono = new ReferenceAnimatorMono
@@ -64,5 +65,8 @@ public class CreateObjectTest : MonoBehaviour
         };
 
         tMonoAnimatorPresentation.m_ReferenceMonos.Add(tReferenceAnimatorMono);
+
+        tMonoAnimatorPresentation.m_ReferenceMonos.Sort(new MonoAnimationComparer());
+
     }
 }

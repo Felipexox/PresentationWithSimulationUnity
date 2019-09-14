@@ -19,17 +19,21 @@ public class MonobehaviorTransformPresentation : ComponentSystem
 
     protected override void OnUpdate()
     {
+        var tMonoComparer = new MonoTransformComparer();
+        var tReferenceMono = new ReferenceTransformMono();
+      
+        
         Entities.ForEach((ref ObjectTransform pObjectEntity) =>
-        {
-            for (int i = 0; i < m_ReferenceMonos.Count; i++)
-            {
-                if (pObjectEntity.MonoBehaviorID == m_ReferenceMonos[i].ObjectID)
-                {
-                    m_ReferenceMonos[i].ObjectTransformReference.position = pObjectEntity.Position;
-                    m_ReferenceMonos[i].ObjectTransformReference.rotation = Quaternion.LookRotation(pObjectEntity.Direction, Vector3.up);
-                }
-            }
-        });
+                {  
+                    tReferenceMono.ObjectID = pObjectEntity.MonoBehaviorID;
+                    int tIndex = m_ReferenceMonos.BinarySearch(tReferenceMono, tMonoComparer);
+                    if (tIndex > -1)
+                    {
+                        m_ReferenceMonos[tIndex].ObjectTransformReference.position = pObjectEntity.Position;
+                        m_ReferenceMonos[tIndex].ObjectTransformReference.rotation =
+                            Quaternion.LookRotation(pObjectEntity.Direction, Vector3.up);
+                    }
+                });
 
     }
 }
@@ -46,28 +50,32 @@ public class MonobehaviorAnimationPresentation : ComponentSystem
 
     protected override void OnUpdate()
     {
+        var tMonoComparer = new MonoAnimationComparer();
+        
+        var tReferenceMono = new ReferenceAnimatorMono();
+
         Entities.ForEach((ref ObjectAnimator pObjectEntity) =>
         {
-            for (int i = 0; i < m_ReferenceMonos.Count; i++)
+            tReferenceMono.ObjectID = pObjectEntity.MonoBehaviorID;
+            int tIndex = m_ReferenceMonos.BinarySearch(tReferenceMono, tMonoComparer);
+            if (tIndex > -1)
             {
-           
-                if (pObjectEntity.MonoBehaviorID == m_ReferenceMonos[i].ObjectID )
-                {
-                    AnimatorClipInfo tCurrentClip =
-                        m_ReferenceMonos[i].ObjectAnimatorReference.GetCurrentAnimatorClipInfo(0)[0];
+                AnimatorClipInfo tCurrentClip =
+                    m_ReferenceMonos[tIndex].ObjectAnimatorReference.GetCurrentAnimatorClipInfo(0)[0];
 
-                    if (String.Compare(tCurrentClip.clip.name, pObjectEntity.Animation.ToString(),
-                            StringComparison.Ordinal) != 0)
+                if (String.Compare(tCurrentClip.clip.name, pObjectEntity.Animation.ToString(),
+                        StringComparison.Ordinal) != 0)
+                {
+                    var tAnimatorControllerParams = m_ReferenceMonos[tIndex].ObjectAnimatorReference.parameters;
+                    for (var j = 0; j < tAnimatorControllerParams.Length; j++)
                     {
-                        var tAnimatorControllerParams = m_ReferenceMonos[i].ObjectAnimatorReference.parameters;
-                        for (var j = 0; j < tAnimatorControllerParams.Length; j++)
-                        {
-                            m_ReferenceMonos[i].ObjectAnimatorReference.SetBool(tAnimatorControllerParams[j].name, false);
-                        }
-                        m_ReferenceMonos[i].ObjectAnimatorReference.SetBool(pObjectEntity.Animation.ToString(), true);
+                        m_ReferenceMonos[tIndex].ObjectAnimatorReference.SetBool(tAnimatorControllerParams[j].name, false);
                     }
+
+                    m_ReferenceMonos[tIndex].ObjectAnimatorReference.SetBool(pObjectEntity.Animation.ToString(), true);
                 }
             }
+
         });
 
     }
@@ -84,3 +92,20 @@ public struct ReferenceAnimatorMono
     public int ObjectID;
     public Animator ObjectAnimatorReference;
 }
+
+public class MonoTransformComparer: IComparer<ReferenceTransformMono>
+{
+    public int Compare(ReferenceTransformMono x, ReferenceTransformMono y)
+    {
+        return x.ObjectID - y.ObjectID;
+    }
+}
+
+public class MonoAnimationComparer: IComparer<ReferenceAnimatorMono>
+{
+    public int Compare(ReferenceAnimatorMono x, ReferenceAnimatorMono y)
+    {
+        return x.ObjectID - y.ObjectID;
+    }
+}
+
