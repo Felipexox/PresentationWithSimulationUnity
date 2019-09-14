@@ -32,7 +32,7 @@ public class AnimationObjectSystem : JobComponentSystem
                     tClip = Animation.Dead;
                 }else if (isAttack)
                 {
-                    tClip = Animation.Attack;
+                    tClip = Animation.PunchTrigger;
                 }
                 else if (isMove)
                 {
@@ -63,7 +63,7 @@ public class AnimationObjectSystem : JobComponentSystem
         {
             ObjectAnimatorChunk = GetArchetypeChunkComponentType<ObjectAnimator>(),
             isAttack = Input.GetKeyDown(KeyCode.X),
-            isMove = Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0,
+            isMove = Input.GetAxisRaw("Horizontal") != 0,
             isDead = false
         };
 

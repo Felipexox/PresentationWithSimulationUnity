@@ -18,7 +18,7 @@ public enum Animation
     Idle,
     WalkForward,
     Run,
-    Attack,
+    PunchTrigger,
     Dead
 }
 public struct ObjectAnimator : IComponentData

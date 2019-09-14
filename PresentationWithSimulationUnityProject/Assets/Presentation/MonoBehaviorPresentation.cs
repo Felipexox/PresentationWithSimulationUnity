@@ -69,10 +69,25 @@ public class MonobehaviorAnimationPresentation : ComponentSystem
                     var tAnimatorControllerParams = m_ReferenceMonos[tIndex].ObjectAnimatorReference.parameters;
                     for (var j = 0; j < tAnimatorControllerParams.Length; j++)
                     {
-                        m_ReferenceMonos[tIndex].ObjectAnimatorReference.SetBool(tAnimatorControllerParams[j].name, false);
-                    }
+                        if(tAnimatorControllerParams[j].type == AnimatorControllerParameterType.Bool)
+                            m_ReferenceMonos[tIndex].ObjectAnimatorReference.SetBool(tAnimatorControllerParams[j].name, false);
 
-                    m_ReferenceMonos[tIndex].ObjectAnimatorReference.SetBool(pObjectEntity.Animation.ToString(), true);
+                        if (String.CompareOrdinal(tAnimatorControllerParams[j].name,
+                                pObjectEntity.Animation.ToString()) == 0)
+                        {
+                            if (tAnimatorControllerParams[j].type == AnimatorControllerParameterType.Bool)
+                            {
+                                m_ReferenceMonos[tIndex].ObjectAnimatorReference
+                                    .SetBool(pObjectEntity.Animation.ToString(), true);
+                            }
+                            else if (tAnimatorControllerParams[j].type == AnimatorControllerParameterType.Trigger)
+                            {
+                                m_ReferenceMonos[tIndex].ObjectAnimatorReference
+                                    .SetTrigger(pObjectEntity.Animation.ToString());
+                            }
+                        }
+                    }
+                    
                 }
             }
 

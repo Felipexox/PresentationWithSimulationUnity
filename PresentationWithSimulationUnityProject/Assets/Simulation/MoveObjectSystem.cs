@@ -60,8 +60,7 @@ public class MoveObjectSystem : JobComponentSystem
         MoveObjectJob tMoveObjectJob = new MoveObjectJob
         {
             ObjectEntityChunk = GetArchetypeChunkComponentType<ObjectTransform>(),
-            HorizontalDirection = Input.GetAxisRaw("Horizontal"),
-            VerticalDirection = Input.GetAxisRaw("Vertical")
+            HorizontalDirection = Input.GetAxisRaw("Horizontal")
         };
 
         return tMoveObjectJob.Schedule(m_Group, dependsOn: inputDeps);
